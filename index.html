@@ -669,7 +669,7 @@ var chooser=document.getElementById('chooser'),results=document.getElementById('
 var picker=document.getElementById('picker'),subrow=document.getElementById('subrow');
 picker.innerHTML='<button class="ptile" type="button" data-k="__perfil" style="--pc:var(--f5)">'+
   '<span class="pg"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></span>'+
-  '<h2>Meu Jampa</h2><div class="pc2" id="pfCount">seu perfil</div>'+
+  '<h2>Minha Jampa</h2><div class="pc2" id="pfCount">seu perfil</div>'+
   '<div class="psub">Marque o que você já faz, o que quer fazer e o que não te interessa. Vira um roteiro por dia da semana.</div></button>'+
   FAMS.slice().sort(function(a,b){var o={ev:0,city:1};return (o[a.k]===undefined?9:o[a.k])-(o[b.k]===undefined?9:o[b.k]);}).map(function(f){
   var n=todos().filter(function(x){return x.fam===f.k;}).length;
@@ -899,7 +899,7 @@ function checaHash(){
   var hs=(location.hash||'').toLowerCase();
   if(hs==='#admin')destravar(true);
   if(hs==='#recomendado'||hs==='#rec')abrirRec();
-  if(hs==='#perfil'||hs==='#meujampa')abrirPerfil();
+  if(hs==='#perfil'||hs==='#minhajampa'||hs==='#meujampa')abrirPerfil();
 }
 checaHash();
 window.addEventListener('hashchange',function(){
@@ -908,7 +908,7 @@ function checaHash(){
   var hs=(location.hash||'').toLowerCase();
   if(hs==='#admin')destravar(true);
   if(hs==='#recomendado'||hs==='#rec')abrirRec();
-  if(hs==='#perfil'||hs==='#meujampa')abrirPerfil();
+  if(hs==='#perfil'||hs==='#minhajampa'||hs==='#meujampa')abrirPerfil();
 }
 checaHash();});
 document.addEventListener('keydown',function(e){
@@ -1019,7 +1019,7 @@ function linha(x,acoes){
 }
 function pintarPerfil(){
   var q=porMarca('quero'),f=porMarca('faco'),n=porMarca('nao');
-  var h='<div class="pfhero"><h1>Meu Jampa</h1>'+
+  var h='<div class="pfhero"><h1>Minha Jampa</h1>'+
     '<p>Seu perfil fica neste navegador. Marque cada atividade como <b>já faço</b>, <b>quero fazer</b> '+
     'ou <b>não me interessa</b> — o que você descartar some da navegação, e o que você quiser fazer '+
     'vira um roteiro organizado por dia da semana.</p></div>'+
