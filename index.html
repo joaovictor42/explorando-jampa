@@ -369,10 +369,59 @@ select{border-radius:8px}
   color:var(--ink);background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px;resize:vertical}
 .exphint{font-family:var(--ffm);font-size:10.5px;color:var(--mut2);line-height:1.7;margin-top:10px}
 </style>
+<style>
+/* ---- marcação de perfil no card ---- */
+.mark{display:flex;gap:2px;margin-left:auto;flex:none}
+.mk{width:26px;height:26px;border:1px solid transparent;border-radius:7px;background:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:var(--mut2);padding:0;transition:background .12s,color .12s}
+.mk svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round}
+.mk:hover{background:var(--soft);color:var(--ink)}
+.mk[aria-pressed="true"]{color:#fff}
+.mk.faco[aria-pressed="true"]{background:var(--f5);border-color:var(--f5)}
+.mk.quero[aria-pressed="true"]{background:var(--hot);border-color:var(--hot)}
+.mk.nao[aria-pressed="true"]{background:var(--mut2);border-color:var(--mut2)}
+.crank{margin-left:0}
+.card.marcado-nao{opacity:.5}
+
+/* ---- Meu Jampa ---- */
+.pfhero{padding-block:40px 6px;max-width:680px}
+.pfhero h1{font-family:var(--ffd);font-weight:800;font-size:clamp(30px,6vw,45px);line-height:1.04;
+  letter-spacing:-.03em;margin:0 0 14px;text-wrap:balance}
+.pfhero p{margin:0;color:var(--mut);font-size:16px;line-height:1.6}
+.pfstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;padding-block:26px 8px}
+.pfst{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:15px 16px;box-shadow:var(--sh)}
+.pfst b{display:block;font-family:var(--ffm);font-size:26px;font-weight:600;letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;line-height:1.1;margin-bottom:3px}
+.pfst span{font-family:var(--ffm);font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--mut2)}
+.pfst.q b{color:var(--hot)} .pfst.f b{color:var(--f5)} .pfst.n b{color:var(--mut2)}
+.pfblk{padding-block:32px 0}
+.pfblk>h2{font-family:var(--ffd);font-weight:700;font-size:clamp(19px,3vw,24px);letter-spacing:-.022em;margin:0 0 5px}
+.pfblk>p.sub{margin:0 0 16px;color:var(--mut);font-size:14px;max-width:64ch}
+.dia{margin-bottom:18px}
+.diah{display:flex;align-items:baseline;gap:9px;padding-bottom:7px;border-bottom:1px solid var(--line2);margin-bottom:9px}
+.diah b{font-family:var(--ffd);font-weight:700;font-size:15px;letter-spacing:-.01em;text-transform:capitalize}
+.diah span{font-family:var(--ffm);font-size:10px;color:var(--mut2)}
+.pfrow{display:flex;align-items:center;gap:11px;padding:8px 0}
+.pfrow .pdot{width:9px;height:9px;border-radius:50%;flex:none}
+.pfrow .pn{flex:1;min-width:0;font-size:13.5px}
+.pfrow .pn small{display:block;font-family:var(--ffm);font-size:10px;color:var(--mut2);margin-top:1px}
+.pfrow .pa{display:flex;gap:6px;flex:none}
+.pfvazio{color:var(--mut);font-size:14px;padding:10px 0 4px}
+.pfbar{display:flex;gap:3px;padding-block:8px 4px;height:26px;align-items:flex-end}
+.pfseg{border-radius:4px 4px 0 0;min-width:5px}
+.pfleg{display:flex;gap:11px;flex-wrap:wrap;font-family:var(--ffm);font-size:10px;color:var(--mut2);margin-top:8px}
+.pfleg i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+</style>
+<style>
+.brand{background:none;border:0;padding:0;cursor:pointer;color:var(--ink);font-family:var(--ffd);
+  font-weight:800;font-size:20px;letter-spacing:-.025em;white-space:nowrap;line-height:1}
+.brand:hover span{opacity:.75}
+.brand:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+</style>
 <div class="top">
   <div class="wrap">
     <div class="tin">
-      <div class="brand">Explorando<span> Jampa</span></div>
+      <button class="brand" id="homeBtn" type="button" title="Voltar ao início">Explorando<span> Jampa</span></button>
       <div class="search">
         <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
         <input type="search" id="q" placeholder="Buscar atividade, lugar, bairro ou contato…" autocomplete="off" aria-label="Buscar">
@@ -392,6 +441,7 @@ select{border-radius:8px}
     <div class="picker" id="picker"></div>
   </section>
   <section id="rec" hidden><div class="recwrap" id="recwrap"></div></section>
+  <section id="perfil" hidden><div id="pfwrap"></div></section>
   <section id="results" hidden>
   <div class="nowcat"><span class="pg" id="nowg"></span><h2 id="nowt"></h2></div>
   <button class="back" id="back" type="button"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Trocar categoria</button>
@@ -401,7 +451,7 @@ select{border-radius:8px}
     <button class="pill" id="fInt" aria-pressed="false">Meus interesses</button>
     <button class="pill" id="fCf" aria-pressed="false">Fonte confirmada</button>
     <button class="pill" id="fCt" aria-pressed="false">Com contato</button>
-    <button class="pill" id="fFav" aria-pressed="false">Salvos</button>
+    <button class="pill" id="fFav" aria-pressed="false">Quero fazer</button>
     <select id="sort" aria-label="Ordenar">
       <option value="r">Mais recomendados</option>
       <option value="n">Nome (A–Z)</option>
@@ -472,16 +522,23 @@ function strip(s){return (s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLower
 function esc(t){var d=document.createElement('div');d.textContent=t||'';return d.innerHTML;}
 ALL.forEach(function(x){x.fam=S2F[x.s]||'city';x._s=strip([x.n,x.d,x.o,x.c,SECN[x.s]].join(' '));});
 
-var FAV={};
-try{FAV=JSON.parse(localStorage.getItem('jampa_fav')||'{}');}catch(e){FAV={};}
-function saveFav(){try{localStorage.setItem('jampa_fav',JSON.stringify(FAV));}catch(e){}}
+var PERFIL={};
+try{PERFIL=JSON.parse(localStorage.getItem('jampa_perfil')||'{}');}catch(e){PERFIL={};}
+function salvaPerfil(){try{localStorage.setItem('jampa_perfil',JSON.stringify(PERFIL));}catch(e){}}
+function marcaDe(x){return PERFIL[chave(x)]||'';}
+function setMarca(k,v){
+  if(PERFIL[k]===v)delete PERFIL[k];else PERFIL[k]=v;
+  salvaPerfil();render(false);
+  if(!document.getElementById('perfil').hidden)pintarPerfil();
+}
 
 var ADM=false;
-var EXTRA=[],F={verArq:false,fam:null,sub:null,nt:false,int:false,cf:false,ct:false,fav:false,mes:{}},Q='',SORT='r',SHOW=48;
+var EXTRA=[],F={verNao:false,verArq:false,fam:null,sub:null,nt:false,int:false,cf:false,ct:false,fav:false,mes:{}},Q='',SORT='r',SHOW=48;
 function todos(){return ALL.concat(EXTRA);}
 function vis(x){
   if(del(x))return false;
   if(arq(x)&&!F.verArq&&!ADM)return false;
+  if(marcaDe(x)==='nao'&&!F.verNao)return false;
   if(!F.fam)return false;
   if(x.fam!==F.fam)return false;
   if(F.sub&&x.s!==F.sub)return false;
@@ -489,7 +546,7 @@ function vis(x){
   if(F.int&&x.na!=='interesse')return false;
   if(F.cf&&x.cf!=='alta')return false;
   if(F.ct&&!x.c)return false;
-  if(F.fav&&!FAV[x.n])return false;
+  if(F.fav&&marcaDe(x)!=='quero')return false;
   var ms=Object.keys(F.mes).filter(function(m){return F.mes[m];});
   if(ms.length){if(!x.m)return false;if(!x.m.some(function(m){return F.mes[m];}))return false;}
   if(Q&&x._s.indexOf(Q)<0)return false;
@@ -522,11 +579,10 @@ function salvaPend(){
 
 function card(x){
   var c=famc(x.fam);
-  var h='<article class="card'+(arq(x)?' isarq':'')+'" style="--fc:'+c+'" data-k="'+esc(slug(x.n))+'"><div class="chead">'+
+  var h='<article class="card'+(arq(x)?' isarq':'')+(marcaDe(x)==='nao'?' marcado-nao':'')+'" style="--fc:'+c+'" data-k="'+esc(slug(x.n))+'"><div class="chead">'+
     '<span class="glyph" style="background:'+c+'"><svg viewBox="0 0 24 24">'+(SVG[x.fam]||SVG.city)+'</svg></span>'+
     '<span class="ckat">'+esc(SECN[x.s]||x.s)+'</span>'+
-    '<span class="crank">#'+x.r+'</span>'+
-    '<button class="fav" type="button" aria-pressed="'+(!!FAV[x.n])+'" data-n="'+esc(x.n)+'" aria-label="Salvar">'+HRT+'</button>'+
+    '<span class="crank">#'+x.r+'</span>'+marcadores(x)+
     '</div><div class="cbody"><h3>'+esc(x.n)+'</h3>';
   if(x.d)h+='<p class="desc">'+esc(x.d)+'</p>';
   var b='';
@@ -597,11 +653,6 @@ function render(reset){
 }
 moreBtn.onclick=function(){SHOW+=48;render(false);};
 grid.addEventListener('click',function(e){
-  var b=e.target.closest('.fav');if(!b)return;
-  var n=b.getAttribute('data-n'),on=!FAV[n];
-  if(on)FAV[n]=1;else delete FAV[n];
-  saveFav();b.setAttribute('aria-pressed',String(on));
-  if(F.fav)render(false);
 });
 
 var cr=document.getElementById('catrow');
@@ -616,10 +667,10 @@ cr.addEventListener('click',function(e){
 
 var chooser=document.getElementById('chooser'),results=document.getElementById('results');
 var picker=document.getElementById('picker'),subrow=document.getElementById('subrow');
-picker.innerHTML='<button class="ptile rtile" type="button" data-k="__rec" style="--pc:var(--hot)">'+
-  '<span class="pg"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6L12 16.8 6.6 19.6l1.2-6L3.3 9.4l6.1-.8z"/></svg></span>'+
-  '<h2>Recomendado para você</h2><div class="pc2">seleção da pesquisa</div>'+
-  '<div class="psub">As escolhas que cruzam seus interesses declarados com horário noturno e fonte verificada — e o que a verificação derrubou.</div></button>'+
+picker.innerHTML='<button class="ptile" type="button" data-k="__perfil" style="--pc:var(--f5)">'+
+  '<span class="pg"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></span>'+
+  '<h2>Meu Jampa</h2><div class="pc2" id="pfCount">seu perfil</div>'+
+  '<div class="psub">Marque o que você já faz, o que quer fazer e o que não te interessa. Vira um roteiro por dia da semana.</div></button>'+
   FAMS.slice().sort(function(a,b){return (a.k==='ev'?-1:0)-(b.k==='ev'?-1:0);}).map(function(f){
   var n=todos().filter(function(x){return x.fam===f.k;}).length;
   var subs=f.s.map(function(s){return SECN[s]||s;}).join(' · ');
@@ -630,10 +681,22 @@ picker.innerHTML='<button class="ptile rtile" type="button" data-k="__rec" style
 picker.addEventListener('click',function(e){
   var t=e.target.closest('.ptile');if(!t)return;
   if(t.dataset.k==='__rec')return abrirRec();
+  if(t.dataset.k==='__perfil')return abrirPerfil();
   abrirFam(t.dataset.k);});
 var recSec=document.getElementById('rec');
+function abrirPerfil(){
+  chooser.hidden=true;results.hidden=true;recSec.hidden=true;pfSec.hidden=false;cr.hidden=false;
+  [].forEach.call(cr.children,function(c){c.setAttribute('aria-selected','false');});
+  pintarPerfil();window.scrollTo({top:0,behavior:'smooth'});
+}
+function irInicio(){
+  F.fam=null;F.sub=null;Q='';document.getElementById('q').value='';
+  chooser.hidden=false;results.hidden=true;recSec.hidden=true;pfSec.hidden=true;cr.hidden=true;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.getElementById('homeBtn').onclick=irInicio;
 function abrirRec(){
-  chooser.hidden=true;results.hidden=true;recSec.hidden=false;cr.hidden=false;
+  chooser.hidden=true;results.hidden=true;pfSec.hidden=true;recSec.hidden=false;cr.hidden=false;
   [].forEach.call(cr.children,function(c){c.setAttribute('aria-selected','false');});
   pintarRec();window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -642,7 +705,7 @@ recSec.addEventListener('click',function(e){
 
 function abrirFam(k){
   var f=FAMS.filter(function(x){return x.k===k;})[0];if(!f)return;
-  document.getElementById('rec').hidden=true;
+  document.getElementById('rec').hidden=true;pfSec.hidden=true;
   F.fam=k;F.sub=null;
   chooser.hidden=true;results.hidden=false;cr.hidden=false;
   [].forEach.call(cr.children,function(c){c.setAttribute('aria-selected',String(c.dataset.k===k));});
@@ -669,11 +732,7 @@ subrow.addEventListener('click',function(e){
   t.setAttribute('aria-pressed',String(on));
   F.sub=on?t.dataset.s:null;render(true);
 });
-document.getElementById('back').onclick=function(){
-  F.fam=null;F.sub=null;Q='';document.getElementById('q').value='';
-  chooser.hidden=false;results.hidden=true;document.getElementById('rec').hidden=true;cr.hidden=true;
-  window.scrollTo({top:0,behavior:'smooth'});
-};
+document.getElementById('back').onclick=irInicio;
 var mr=document.getElementById('mrow');
 function contaMes(m){var n=0;todos().forEach(function(x){
   if(x.s!=='eventos'||del(x))return;
@@ -806,6 +865,8 @@ ov.addEventListener('click',function(e){
   if(a){toggleArq(a.getAttribute('data-arq'));fecharDet();}
 });
 grid.addEventListener('click',function(e){
+  var m=e.target.closest('[data-mk]');
+  if(m)return setMarca(m.getAttribute('data-k'),m.getAttribute('data-mk'));
   var a=e.target.closest('[data-arq2]');if(a)return toggleArq(a.getAttribute('data-arq2'));
   var x=e.target.closest('[data-del]');if(x)return apagar(x.getAttribute('data-del'));
   var d=e.target.closest('[data-det]');if(d)abrirDet(d.getAttribute('data-det'));
@@ -834,8 +895,22 @@ function travar(){
 }
 try{if(localStorage.getItem('jampa_admin')==='1')destravar(false);}catch(e){}
 if((location.hash||'').toLowerCase()==='#admin')destravar(true);
+function checaHash(){
+  var hs=(location.hash||'').toLowerCase();
+  if(hs==='#admin')destravar(true);
+  if(hs==='#recomendado'||hs==='#rec')abrirRec();
+  if(hs==='#perfil'||hs==='#meujampa')abrirPerfil();
+}
+checaHash();
 window.addEventListener('hashchange',function(){
-  if((location.hash||'').toLowerCase()==='#admin')destravar(true);});
+  if((location.hash||'').toLowerCase()==='#admin')destravar(true);
+function checaHash(){
+  var hs=(location.hash||'').toLowerCase();
+  if(hs==='#admin')destravar(true);
+  if(hs==='#recomendado'||hs==='#rec')abrirRec();
+  if(hs==='#perfil'||hs==='#meujampa')abrirPerfil();
+}
+checaHash();});
 document.addEventListener('keydown',function(e){
   if(e.ctrlKey&&e.shiftKey&&(e.key==='A'||e.key==='a')){
     e.preventDefault();
@@ -897,6 +972,153 @@ vis=function(x){
   return true;
 };
 
+
+
+// ---------- marcadores de perfil ----------
+var ICO={
+ faco:'<path d="M20 6L9 17l-5-5"/>',
+ quero:'<path d="M12 3.4l2.6 5.5 6 .9-4.3 4.2 1 6-5.3-2.8-5.4 2.8 1-6L3.3 9.8l6-.9z"/>',
+ nao:'<path d="M18 6L6 18M6 6l12 12"/>'};
+var ROT={faco:'Já faço',quero:'Quero fazer',nao:'Não me interessa'};
+function marcadores(x){
+  var k=chave(x),m=marcaDe(x),h='<span class="mark">';
+  ['faco','quero','nao'].forEach(function(v){
+    h+='<button class="mk '+v+'" type="button" data-mk="'+v+'" data-k="'+esc(k)+'" '+
+       'aria-pressed="'+(m===v)+'" title="'+ROT[v]+'" aria-label="'+ROT[v]+'">'+
+       '<svg viewBox="0 0 24 24">'+ICO[v]+'</svg></button>';});
+  return h+'</span>';
+}
+
+// ---------- dias da semana a partir do horário ----------
+var SEM=['domingo','segunda','terça','quarta','quinta','sexta','sábado'];
+var SEMK=[['domingo','dom'],['segunda','seg'],['terca','ter'],['quarta','qua'],['quinta','qui'],['sexta','sex'],['sabado','sab']];
+function diasSemana(x){
+  var t=strip(x.h||'');
+  if(!t)return [];
+  var got={};
+  if(/todos os dias|diariamente|seg a dom|segunda a domingo|24 ?h|24 horas/.test(t))return [0,1,2,3,4,5,6];
+  var ranges=[[/segunda\s*(?:a|at[eé]|-)\s*sexta/,[1,2,3,4,5]],
+              [/segunda\s*(?:a|at[eé]|-)\s*sabado/,[1,2,3,4,5,6]],
+              [/terca\s*(?:a|at[eé]|-)\s*domingo/,[2,3,4,5,6,0]],
+              [/quarta\s*(?:a|at[eé]|-)\s*domingo/,[3,4,5,6,0]],
+              [/terca\s*(?:a|at[eé]|-)\s*sexta/,[2,3,4,5]]];
+  for(var i=0;i<ranges.length;i++)if(ranges[i][0].test(t))ranges[i][1].forEach(function(d){got[d]=1;});
+  SEMK.forEach(function(p,idx){
+    if(new RegExp('(?<![a-z])'+p[0]).test(t)||new RegExp('(?<![a-z])'+p[1]+'(?![a-z])').test(t))got[idx]=1;});
+  return Object.keys(got).map(Number).sort();
+}
+
+// ---------- página Meu Jampa ----------
+var pfSec=document.getElementById('perfil'),pfWrap=document.getElementById('pfwrap');
+function porMarca(v){return todos().filter(function(x){return marcaDe(x)===v&&!del(x);});}
+function linha(x,acoes){
+  var c=famc(x.fam);
+  return '<div class="pfrow"><span class="pdot" style="background:'+c+'"></span>'+
+    '<span class="pn">'+esc(x.n)+'<small>'+esc(SECN[x.s]||x.s)+(x.h?' · '+esc(x.h.slice(0,52)):'')+'</small></span>'+
+    '<span class="pa">'+acoes+'</span></div>';
+}
+function pintarPerfil(){
+  var q=porMarca('quero'),f=porMarca('faco'),n=porMarca('nao');
+  var h='<div class="pfhero"><h1>Meu Jampa</h1>'+
+    '<p>Seu perfil fica neste navegador. Marque cada atividade como <b>já faço</b>, <b>quero fazer</b> '+
+    'ou <b>não me interessa</b> — o que você descartar some da navegação, e o que você quiser fazer '+
+    'vira um roteiro organizado por dia da semana.</p></div>'+
+    '<div class="pfstats">'+
+    '<div class="pfst q"><b>'+q.length+'</b><span>quero fazer</span></div>'+
+    '<div class="pfst f"><b>'+f.length+'</b><span>já faço</span></div>'+
+    '<div class="pfst n"><b>'+n.length+'</b><span>descartados</span></div>'+
+    '<div class="pfst"><b>'+todos().filter(function(x){return !del(x);}).length+'</b><span>no catálogo</span></div>'+
+    '</div>';
+
+  // distribuição por família
+  if(q.length){
+    var tal={},tot=0;
+    q.forEach(function(x){tal[x.fam]=(tal[x.fam]||0)+1;tot++;});
+    var ord=Object.keys(tal).sort(function(a,b){return tal[b]-tal[a];});
+    h+='<section class="pfblk"><h2>Onde seus interesses se concentram</h2>'+
+       '<p class="sub">Calculado a partir do que você marcou como “quero fazer”.</p><div class="pfbar">';
+    ord.forEach(function(k){
+      var pct=Math.round(tal[k]/tot*100);
+      h+='<span class="pfseg" style="background:'+famc(k)+';flex:'+tal[k]+';height:'+(40+pct)+'%"></span>';});
+    h+='</div><div class="pfleg">'+ord.map(function(k){
+      var nome=(FAMS.filter(function(z){return z.k===k;})[0]||{}).n||k;
+      return '<span><i style="background:'+famc(k)+'"></i>'+esc(nome)+' · '+tal[k]+'</span>';}).join('')+'</div></section>';
+  }
+
+  // roteiro por dia da semana
+  h+='<section class="pfblk"><h2>Meu roteiro</h2>'+
+     '<p class="sub">O que você quer fazer, distribuído pelos dias em que funciona. Quem não publica horário aparece no fim.</p>';
+  if(!q.length){
+    h+='<p class="pfvazio">Nada marcado ainda. Navegue pelas categorias e use a estrela nos cards.</p>';
+  }else{
+    var porDia={},sem=[];
+    q.forEach(function(x){
+      var ds=diasSemana(x);
+      if(!ds.length){sem.push(x);return;}
+      ds.forEach(function(d){(porDia[d]=porDia[d]||[]).push(x);});});
+    [1,2,3,4,5,6,0].forEach(function(d){
+      var l=porDia[d];if(!l||!l.length)return;
+      h+='<div class="dia"><div class="diah"><b>'+SEM[d]+'</b><span>'+l.length+'</span></div>';
+      l.forEach(function(x){h+=linha(x,'<button class="abtn" type="button" data-det2="'+esc(chave(x))+'">detalhes</button>');});
+      h+='</div>';});
+    if(sem.length){
+      h+='<div class="dia"><div class="diah"><b>sem horário publicado</b><span>'+sem.length+'</span></div>';
+      sem.forEach(function(x){h+=linha(x,'<button class="abtn" type="button" data-det2="'+esc(chave(x))+'">detalhes</button>');});
+      h+='</div>';}
+  }
+  h+='</section>';
+
+  if(f.length){
+    h+='<section class="pfblk"><h2>Já faço</h2><p class="sub">Serve para você não reindicar a si mesmo.</p>';
+    f.forEach(function(x){h+=linha(x,'<button class="abtn" type="button" data-det2="'+esc(chave(x))+'">detalhes</button>');});
+    h+='</section>';}
+  if(n.length){
+    h+='<section class="pfblk"><h2>Descartados</h2><p class="sub">Escondidos da navegação. Clique para trazer de volta.</p>';
+    n.forEach(function(x){h+=linha(x,'<button class="abtn" type="button" data-volta="'+esc(chave(x))+'">restaurar</button>');});
+    h+='</section>';}
+
+  h+='<section class="pfblk"><h2>Levar o perfil para outro navegador</h2>'+
+     '<p class="sub">O perfil vive só aqui. Exporte para guardar ou mover.</p>'+
+     '<div class="recacts"><button class="act det" type="button" data-pfexp="1">Exportar perfil</button>'+
+     '<button class="act" type="button" data-pfimp="1">Importar perfil</button>'+
+     (Object.keys(PERFIL).length?'<button class="act aq" type="button" data-pfzera="1">Limpar tudo</button>':'')+
+     '</div></section>';
+  pfWrap.innerHTML=h;
+}
+pfSec.addEventListener('click',function(e){
+  var d=e.target.closest('[data-det2]');if(d)return abrirDet(d.getAttribute('data-det2'));
+  var v=e.target.closest('[data-volta]');if(v)return setMarca(v.getAttribute('data-volta'),'nao');
+  if(e.target.closest('[data-pfzera]')){if(confirm2())return;}
+  if(e.target.closest('[data-pfexp]')){
+    var txt=JSON.stringify({perfil:PERFIL},null,2);
+    sheet.innerHTML='<button class="xb" type="button" data-close="1">×</button><h2>Seu perfil</h2>'+
+      '<p class="dtxt">Copie e guarde. Para restaurar noutro navegador, use Importar.</p>'+
+      '<div class="expbox"><textarea id="expTxt" readonly spellcheck="false"></textarea></div>'+
+      '<div class="sacts" style="margin-top:12px"><button class="act det" type="button" data-copy="1">Copiar</button></div>';
+    document.getElementById('expTxt').value=txt;
+    ov.hidden=false;document.body.style.overflow='hidden';return;}
+  if(e.target.closest('[data-pfimp]')){
+    sheet.innerHTML='<button class="xb" type="button" data-close="1">×</button><h2>Importar perfil</h2>'+
+      '<p class="dtxt">Cole o JSON exportado antes e confirme.</p>'+
+      '<div class="expbox"><textarea id="impTxt" spellcheck="false" placeholder=\'{"perfil":{...}}\'></textarea></div>'+
+      '<div class="sacts" style="margin-top:12px"><button class="act det" type="button" data-impok="1">Importar</button></div>';
+    ov.hidden=false;document.body.style.overflow='hidden';return;}
+});
+function confirm2(){
+  sheet.innerHTML='<button class="xb" type="button" data-close="1">×</button><h2>Limpar o perfil?</h2>'+
+    '<p class="dtxt">Todas as marcações deste navegador serão apagadas. Nada acontece com o catálogo.</p>'+
+    '<div class="sacts"><button class="act dl" type="button" data-zerar="1">Sim, limpar</button>'+
+    '<button class="act" type="button" data-close="1">Cancelar</button></div>';
+  ov.hidden=false;document.body.style.overflow='hidden';return true;
+}
+ov.addEventListener('click',function(e){
+  if(e.target.closest('[data-zerar]')){PERFIL={};salvaPerfil();fecharDet();render(false);pintarPerfil();return;}
+  if(e.target.closest('[data-impok]')){
+    var t=document.getElementById('impTxt');if(!t)return;
+    try{var o=JSON.parse(t.value);if(o&&o.perfil){PERFIL=o.perfil;salvaPerfil();fecharDet();render(false);pintarPerfil();}}
+    catch(err){t.style.borderColor=pal('--hot');}
+    return;}
+});
 
 // ---------- exportar alteracoes ----------
 function montarExport(){
