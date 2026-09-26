@@ -660,7 +660,7 @@ function tab(k,name,glyph,n,sel){
   return '<button class="ctab" role="tab" type="button" data-k="'+k+'" aria-selected="'+sel+'">'+
     '<svg viewBox="0 0 24 24">'+glyph+'</svg>'+name+'<span class="cn">'+n+'</span></button>';
 }
-cr.innerHTML=FAMS.slice().sort(function(a,b){return (a.k==='ev'?-1:0)-(b.k==='ev'?-1:0);}).map(function(f){return tab(f.k,f.n,SVG[f.k],todos().filter(function(x){return x.fam===f.k;}).length,false);}).join('');
+cr.innerHTML=FAMS.slice().sort(function(a,b){var o={ev:0,city:1};return (o[a.k]===undefined?9:o[a.k])-(o[b.k]===undefined?9:o[b.k]);}).map(function(f){return tab(f.k,f.n,SVG[f.k],todos().filter(function(x){return x.fam===f.k;}).length,false);}).join('');
 cr.addEventListener('click',function(e){
   var t=e.target.closest('.ctab');if(!t)return;abrirFam(t.dataset.k);
 });
@@ -671,7 +671,7 @@ picker.innerHTML='<button class="ptile" type="button" data-k="__perfil" style="-
   '<span class="pg"><svg viewBox="0 0 24 24"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></span>'+
   '<h2>Meu Jampa</h2><div class="pc2" id="pfCount">seu perfil</div>'+
   '<div class="psub">Marque o que você já faz, o que quer fazer e o que não te interessa. Vira um roteiro por dia da semana.</div></button>'+
-  FAMS.slice().sort(function(a,b){return (a.k==='ev'?-1:0)-(b.k==='ev'?-1:0);}).map(function(f){
+  FAMS.slice().sort(function(a,b){var o={ev:0,city:1};return (o[a.k]===undefined?9:o[a.k])-(o[b.k]===undefined?9:o[b.k]);}).map(function(f){
   var n=todos().filter(function(x){return x.fam===f.k;}).length;
   var subs=f.s.map(function(s){return SECN[s]||s;}).join(' · ');
   return '<button class="ptile" type="button" data-k="'+f.k+'" style="--pc:'+famc(f.k)+'">'+
