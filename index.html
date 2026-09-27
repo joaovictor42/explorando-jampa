@@ -453,9 +453,7 @@ select{border-radius:8px}
   <button class="back" id="back" type="button"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Trocar categoria</button>
   <div class="subrow" id="subrow"></div>
   <div class="bar">
-    <button class="pill" id="fInt" aria-pressed="false">Meus interesses</button>
     <button class="pill" id="fCf" aria-pressed="false">Fonte confirmada</button>
-    <button class="pill" id="fCt" aria-pressed="false">Com contato</button>
     <button class="pill" id="fFav" aria-pressed="false">Quero fazer</button>
     <select id="sort" aria-label="Ordenar">
       <option value="r">Mais recomendados</option>
@@ -540,7 +538,7 @@ function setMarca(k,v){
 }
 
 var ADM=false;
-var EXTRA=[],F={verNao:false,verArq:false,fam:null,sub:null,int:false,cf:false,ct:false,fav:false,mes:{}},Q='',SORT='r',SHOW=48;
+var EXTRA=[],F={verNao:false,verArq:false,fam:null,sub:null,cf:false,fav:false,mes:{}},Q='',SORT='r',SHOW=48;
 function todos(){return ALL.concat(EXTRA);}
 function vis(x){
   if(del(x))return false;
@@ -552,9 +550,7 @@ function vis(x){
   }else if(!Q){
     return false;
   }
-  if(F.int&&x.na!=='interesse')return false;
   if(F.cf&&x.cf!=='alta')return false;
-  if(F.ct&&!x.c)return false;
   if(F.fav&&marcaDe(x)!=='quero')return false;
   var ms=Object.keys(F.mes).filter(function(m){return F.mes[m];});
   if(ms.length){if(!x.m)return false;if(!x.m.some(function(m){return F.mes[m];}))return false;}
@@ -586,6 +582,23 @@ function salvaPend(){
   if(eb){eb.disabled=!n;}
 }
 
+function rotuloMeses(x){
+  if(!x.m||!x.m.length)return '';
+  if(x.dd){
+    var meses=Object.keys(x.dd).map(Number).sort(function(a,b){return a-b;});
+    if(meses.length>1){
+      var m1=meses[0],m2=meses[meses.length-1];
+      var d1=x.dd[m1][0],d2=x.dd[m2][x.dd[m2].length-1];
+      return d1+' '+MESN[m1-1]+' – '+d2+' '+MESN[m2-1];
+    }
+    if(meses.length===1){
+      var m=meses[0],ds=x.dd[m];
+      if(ds&&ds.length>1)return ds[0]+' a '+ds[ds.length-1]+' '+MESN[m-1];
+      if(ds&&ds.length===1)return ds[0]+' '+MESN[m-1];
+    }
+  }
+  return x.m.map(function(m){return MESN[m-1];}).join(' · ');
+}
 function card(x){
   var c=famc(x.fam);
   var h='<article class="card'+(x.dest?' isdest':'')+(arq(x)?' isarq':'')+(marcaDe(x)==='nao'?' marcado-nao':'')+'" style="--fc:'+c+'" data-k="'+esc(slug(x.n))+'"><div class="chead">'+
@@ -597,7 +610,7 @@ function card(x){
   var b='';
   if(x.dest)b+='<span class="b dest">destaque</span>';
   if(arq(x))b+='<span class="b arq">arquivado</span>';
-  if(x.m&&x.m.length)b+='<span class="b mes">'+x.m.map(function(m){return MESN[m-1];}).join(' · ')+'</span>';
+  if(x.m&&x.m.length)b+='<span class="b mes">'+esc(rotuloMeses(x))+'</span>';
   if(b)h+='<div class="bdg">'+b+'</div>';
   h+='</div><div class="acts">'+
      '<button class="act det" type="button" data-det="'+esc(slug(x.n))+'">Ver detalhes</button>'+
@@ -617,7 +630,7 @@ function detalhe(x){
   if(x.cf==='alta')b+='<span class="b">fonte confirmada</span>';
   if(x.cf==='baixa')b+='<span class="b">fonte fraca</span>';
   if(x.ll)b+='<span class="b">endereço exato</span>';
-  if(x.m&&x.m.length)b+='<span class="b mes">'+x.m.map(function(m){return MESN[m-1];}).join(' · ')+'</span>';
+  if(x.m&&x.m.length)b+='<span class="b mes">'+esc(rotuloMeses(x))+'</span>';
   var h='<button class="xb" type="button" data-close="1" aria-label="Fechar">×</button>'+
     '<div class="chead" style="padding:0 0 12px">'+
     '<span class="glyph" style="background:'+c+'"><svg viewBox="0 0 24 24">'+(SVG[x.fam]||SVG.city)+'</svg></span>'+
@@ -782,8 +795,7 @@ montarMeses();
 function pill(id,fn){var el=document.getElementById(id);
   el.onclick=function(){var v=el.getAttribute('aria-pressed')!=='true';
     el.setAttribute('aria-pressed',String(v));fn(v);render(true);};}
-pill('fInt',function(v){F.int=v;});
-pill('fCf',function(v){F.cf=v;});pill('fCt',function(v){F.ct=v;});
+pill('fCf',function(v){F.cf=v;});
 pill('fFav',function(v){F.fav=v;});
 document.getElementById('sort').onchange=function(e){SORT=e.target.value;render(true);};
 var tmr;document.getElementById('q').addEventListener('input',function(e){
