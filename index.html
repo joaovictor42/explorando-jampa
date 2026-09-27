@@ -453,7 +453,6 @@ select{border-radius:8px}
   <button class="back" id="back" type="button"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Trocar categoria</button>
   <div class="subrow" id="subrow"></div>
   <div class="bar">
-    <button class="pill" id="fCf" aria-pressed="false">Fonte confirmada</button>
     <button class="pill" id="fFav" aria-pressed="false">Quero fazer</button>
     <select id="sort" aria-label="Ordenar">
       <option value="r">Mais recomendados</option>
@@ -538,7 +537,7 @@ function setMarca(k,v){
 }
 
 var ADM=false;
-var EXTRA=[],F={verNao:false,verArq:false,fam:null,sub:null,cf:false,fav:false,mes:{}},Q='',SORT='r',SHOW=48;
+var EXTRA=[],F={verNao:false,verArq:false,fam:null,sub:null,fav:false,mes:{}},Q='',SORT='r',SHOW=48;
 function todos(){return ALL.concat(EXTRA);}
 function vis(x){
   if(del(x))return false;
@@ -550,7 +549,6 @@ function vis(x){
   }else if(!Q){
     return false;
   }
-  if(F.cf&&x.cf!=='alta')return false;
   if(F.fav&&marcaDe(x)!=='quero')return false;
   var ms=Object.keys(F.mes).filter(function(m){return F.mes[m];});
   if(ms.length){if(!x.m)return false;if(!x.m.some(function(m){return F.mes[m];}))return false;}
@@ -795,7 +793,6 @@ montarMeses();
 function pill(id,fn){var el=document.getElementById(id);
   el.onclick=function(){var v=el.getAttribute('aria-pressed')!=='true';
     el.setAttribute('aria-pressed',String(v));fn(v);render(true);};}
-pill('fCf',function(v){F.cf=v;});
 pill('fFav',function(v){F.fav=v;});
 document.getElementById('sort').onchange=function(e){SORT=e.target.value;render(true);};
 var tmr;document.getElementById('q').addEventListener('input',function(e){
