@@ -453,7 +453,6 @@ select{border-radius:8px}
   <button class="back" id="back" type="button"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg>Trocar categoria</button>
   <div class="subrow" id="subrow"></div>
   <div class="bar">
-    <button class="pill" id="fNt" aria-pressed="false">Abre à noite</button>
     <button class="pill" id="fInt" aria-pressed="false">Meus interesses</button>
     <button class="pill" id="fCf" aria-pressed="false">Fonte confirmada</button>
     <button class="pill" id="fCt" aria-pressed="false">Com contato</button>
@@ -541,7 +540,7 @@ function setMarca(k,v){
 }
 
 var ADM=false;
-var EXTRA=[],F={verNao:false,verArq:false,fam:null,sub:null,nt:false,int:false,cf:false,ct:false,fav:false,mes:{}},Q='',SORT='r',SHOW=48;
+var EXTRA=[],F={verNao:false,verArq:false,fam:null,sub:null,int:false,cf:false,ct:false,fav:false,mes:{}},Q='',SORT='r',SHOW=48;
 function todos(){return ALL.concat(EXTRA);}
 function vis(x){
   if(del(x))return false;
@@ -553,7 +552,6 @@ function vis(x){
   }else if(!Q){
     return false;
   }
-  if(F.nt&&!x.nt)return false;
   if(F.int&&x.na!=='interesse')return false;
   if(F.cf&&x.cf!=='alta')return false;
   if(F.ct&&!x.c)return false;
@@ -784,7 +782,7 @@ montarMeses();
 function pill(id,fn){var el=document.getElementById(id);
   el.onclick=function(){var v=el.getAttribute('aria-pressed')!=='true';
     el.setAttribute('aria-pressed',String(v));fn(v);render(true);};}
-pill('fNt',function(v){F.nt=v;});pill('fInt',function(v){F.int=v;});
+pill('fInt',function(v){F.int=v;});
 pill('fCf',function(v){F.cf=v;});pill('fCt',function(v){F.ct=v;});
 pill('fFav',function(v){F.fav=v;});
 document.getElementById('sort').onchange=function(e){SORT=e.target.value;render(true);};
