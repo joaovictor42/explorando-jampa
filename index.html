@@ -418,6 +418,12 @@ select{border-radius:8px}
 .brand:hover span{opacity:.75}
 .brand:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
 </style>
+<style>
+.card.isdest{border-color:color-mix(in srgb,var(--fc) 55%,var(--line));box-shadow:var(--shh)}
+.card.isdest .chead{background:color-mix(in srgb,var(--fc) 13%,var(--card))}
+.card.isdest::before{content:"";display:block;height:3px;background:var(--fc)}
+.b.dest{color:#fff;background:var(--fc);border-color:var(--fc);font-weight:600}
+</style>
 <div class="top">
   <div class="wrap">
     <div class="tin">
@@ -436,7 +442,7 @@ select{border-radius:8px}
   <section id="chooser" hidden>
     <div class="hero">
       <h1>O que você quer fazer em João Pessoa?</h1>
-      <p>Escolha uma categoria para começar. São <b>947 atividades, escolas, clubes e eventos</b> levantados na cidade e na região metropolitana, cada um com link direto para o Google Maps.</p>
+      <p>Escolha uma categoria para começar. São <b>1412 atividades, escolas, clubes e eventos</b> levantados na cidade e na região metropolitana, cada um com link direto para o Google Maps.</p>
     </div>
     <div class="picker" id="picker"></div>
   </section>
@@ -469,7 +475,7 @@ select{border-radius:8px}
   </section>
   <footer>
     <div id="dbinfo">Curadoria local: arquivar e excluir valem neste navegador. Para que a escolha apareça para quem receber o link, peça que eu aplique na publicação.</div>
-    <div>275 dos 947 itens têm endereço geocodificado com precisão. Os demais abrem no Maps pela busca do nome e do bairro — confirme antes de se deslocar.</div>
+    <div>275 dos 1412 itens têm endereço geocodificado com precisão. Os demais abrem no Maps pela busca do nome e do bairro — confirme antes de se deslocar.</div>
   </footer>
 </div>
 <div class="ov" id="ov" hidden><div class="sheet" id="sheet"></div></div>
@@ -490,6 +496,7 @@ var ALL=PACK.itens||[];
 document.getElementById('loading').hidden=true;
 document.getElementById('chooser').hidden=false;
 var SVG={
+ tur:'<path d="M3 17l6-11 4 7 3-4 5 8z"/><circle cx="8" cy="6" r="1.6"/>',
  mar:'<path d="M3 11c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/><path d="M3 16c2-2 4-2 6 0s4 2 6 0 4-2 6 0"/>',
  alto:'<path d="M3 13c3-7 15-7 18 0"/><path d="M12 13l-3.5 7h7z"/>',
  vel:'<path d="M5 21V4"/><path d="M5 5h12l-3 4 3 4H5"/>',
@@ -502,7 +509,7 @@ var SECN={agua:'Água e mergulho',vento:'Vento e reboque',vela:'Vela e náutica'
  ar:'Paramotor e voo',motor:'Kart e velocidade',precisao:'Tiro e precisão',lamina:'Lâmina e marciais',
  prancha:'Skate e prancha',pesca:'Pesca',aventura:'Aventura e natureza',manuais:'Oficinas manuais',
  animais:'Animais e hipismo',corpo:'Corpo e bem-estar',idiomas:'Idiomas e formação',praias:'Praias e passeios',
- batevolta:'Bate-volta',cultura:'Cultura e museus',eventos:'Eventos',universidade:'Universidade e extensão',noite:'Camada noturna',jogos:'Jogos indoor',
+ batevolta:'Bate-volta',cultura:'Cultura e museus',eventos:'Eventos',universidade:'Universidade e extensão',turismo:'Passeios e agências',noite:'Camada noturna',jogos:'Jogos indoor',
  gastro_curso:'Gastronomia',bares:'Bares e comida',clubes:'Clubes e grupos',nicho:'Nicho'};
 var FAMS=[
  {k:'mar',n:'Mar e água',c:'--f1',s:['agua','vento','vela','pesca']},
@@ -510,6 +517,7 @@ var FAMS=[
  {k:'vel',n:'Velocidade',c:'--f3',s:['motor','prancha']},
  {k:'prec',n:'Precisão',c:'--f4',s:['precisao','lamina']},
  {k:'terra',n:'Natureza',c:'--f5',s:['aventura','praias','batevolta','animais']},
+ {k:'tur',n:'Turismo',c:'--f2',s:['turismo']},
  {k:'saber',n:'Cursos',c:'--f6',s:['manuais','idiomas','gastro_curso']},
  {k:'city',n:'Cidade',c:'--f7',s:['cultura','corpo','jogos','bares','clubes','nicho','noite']},
  {k:'ev',n:'Eventos',c:'--f8',s:['eventos','universidade']}];
@@ -579,13 +587,14 @@ function salvaPend(){
 
 function card(x){
   var c=famc(x.fam);
-  var h='<article class="card'+(arq(x)?' isarq':'')+(marcaDe(x)==='nao'?' marcado-nao':'')+'" style="--fc:'+c+'" data-k="'+esc(slug(x.n))+'"><div class="chead">'+
+  var h='<article class="card'+(x.dest?' isdest':'')+(arq(x)?' isarq':'')+(marcaDe(x)==='nao'?' marcado-nao':'')+'" style="--fc:'+c+'" data-k="'+esc(slug(x.n))+'"><div class="chead">'+
     '<span class="glyph" style="background:'+c+'"><svg viewBox="0 0 24 24">'+(SVG[x.fam]||SVG.city)+'</svg></span>'+
     '<span class="ckat">'+esc(SECN[x.s]||x.s)+'</span>'+
     '<span class="crank">#'+x.r+'</span>'+marcadores(x)+
     '</div><div class="cbody"><h3>'+esc(x.n)+'</h3>';
   if(x.d)h+='<p class="desc">'+esc(x.d)+'</p>';
   var b='';
+  if(x.dest)b+='<span class="b dest">destaque</span>';
   if(arq(x))b+='<span class="b arq">arquivado</span>';
   if(x.nt)b+='<span class="b nt">abre à noite</span>';
   if(x.na==='interesse')b+='<span class="b int">interesse seu</span>';
@@ -604,6 +613,7 @@ function card(x){
 function detalhe(x){
   var c=famc(x.fam);
   var b='';
+  if(x.dest)b+='<span class="b dest">destaque</span>';
   if(arq(x))b+='<span class="b arq">arquivado</span>';
   if(x.nt)b+='<span class="b nt">abre à noite</span>';
   if(x.na==='interesse')b+='<span class="b int">interesse seu</span>';
@@ -639,7 +649,7 @@ function filtrados(){
   var v=todos().filter(vis);
   if(SORT==='n')v.sort(function(a,b){return a.n.localeCompare(b.n,'pt');});
   else if(SORT==='s')v.sort(function(a,b){return a.s===b.s?a.r-b.r:(SECN[a.s]||'').localeCompare(SECN[b.s]||'','pt');});
-  else v.sort(function(a,b){return a.r-b.r;});
+  else v.sort(function(a,b){return ((b.dest?1:0)-(a.dest?1:0))||(a.r-b.r);});
   return v;
 }
 function render(reset){
@@ -1008,7 +1018,7 @@ function diasSemana(x){
   return Object.keys(got).map(Number).sort();
 }
 
-// ---------- página Meu Jampa ----------
+// ---------- página Minha Jampa ----------
 var pfSec=document.getElementById('perfil'),pfWrap=document.getElementById('pfwrap');
 function porMarca(v){return todos().filter(function(x){return marcaDe(x)===v&&!del(x);});}
 function linha(x,acoes){
